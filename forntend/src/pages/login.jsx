@@ -35,7 +35,7 @@ function Aute (){
                         }),}
 
 
-                        const reponse = await fetch("http://localhost:8000/login", options);
+                        const reponse = await fetch("http://13.62.54.222:8000/login", options);
                         const data= await reponse.json()
                         console.log(data);
                         
@@ -99,7 +99,7 @@ function Aute (){
                         }),}
 
 
-                        const reponse = await fetch("http://localhost:8000/register", options);
+                        const reponse = await fetch("http://13.62.54.222:8000/register", options);
                         const data= await reponse.json()
                         console.log(data);
                         

@@ -22,7 +22,7 @@ function Home() {
         const getdata = async () => {
             setLoading(true);
             try{
-                const reponse = await fetch("http://localhost:8000/getProducts");
+                const reponse = await fetch("http://13.62.54.222:8000/getProducts");
                 const data = await reponse.json();
                 console.log(data)
                 setProducts(data[0].categories);
