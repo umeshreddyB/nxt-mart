@@ -35,7 +35,7 @@ function Aute (){
                         }),}
 
 
-                        const reponse = await fetch("http://localhost:8000/login", options);
+                        const reponse = await fetch("https://nxt-mart-54ka.onrender.com/login", options);
                         const data= await reponse.json()
                         
                         if(data.token === undefined){
@@ -98,7 +98,7 @@ function Aute (){
                         }),}
 
 
-                        const reponse = await fetch("http://localhost:8000/register", options);
+                        const reponse = await fetch("https://nxt-mart-54ka.onrender.com/register", options);
                         const data= await reponse.json()
                         
                         if(data.token === undefined){

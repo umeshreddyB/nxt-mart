@@ -21,7 +21,7 @@ function Home() {
         const getdata = async () => {
             setLoading(true);
             try{
-                const reponse = await fetch("http://localhost:8000/getProducts");
+                const reponse = await fetch("https://nxt-mart-54ka.onrender.com/https://nxt-mart-54ka.onrender.com/getProducts");
                 const data = await reponse.json();
 
                 const categoryList = Array.isArray(data)
