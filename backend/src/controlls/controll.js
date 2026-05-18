@@ -1,41 +1,88 @@
 import jwt from "jsonwebtoken";
 import {products,usern, Order} from "../model/model.js"
 
-export async function login(req,res){
-    const {username,password}=req.body;
-        const result = await usern.findOne({username,password})
-        if(result){
-            const role = result.role || "user";
-            const payload={
-              username,
-              role
-            }
-          const token = jwt.sign(payload,"ABC") 
-          res.status(200).json({token, role})
-        }
-        else{
-          res.json({"message":"user invaild"})
-        }
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const normalizeEmail = (email) => email.trim().toLowerCase();
+
+const findUserByEmail = (normalizedEmail) =>
+  usern.findOne({
+    email: { $regex: new RegExp(`^${normalizedEmail.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") },
+  });
+
+const passwordsMatch = (storedPassword, inputPassword) => {
+  if (storedPassword == null || inputPassword == null) return false;
+  return String(storedPassword).trim() === String(inputPassword).trim();
+};
+
+const findUserForLogin = async (emailOrUsername) => {
+  const normalizedEmail = normalizeEmail(emailOrUsername);
+  const byEmail = await findUserByEmail(normalizedEmail);
+  if (byEmail) return byEmail;
+
+  const trimmed = emailOrUsername.trim();
+  return usern.findOne({
+    $or: [{ username: trimmed }, { email: trimmed }],
+  });
+};
+
+export async function login(req, res) {
+  const { email, username, password } = req.body;
+  const loginId = (email || username || "").trim();
+
+  if (!loginId || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
+  const user = await findUserForLogin(loginId);
+
+  if (!user) {
+    return res.status(404).json({ message: "Email didn't register" });
+  }
+
+  if (!passwordsMatch(user.password, password)) {
+    return res.status(401).json({ message: "Password is wrong" });
+  }
+
+  const role = user.role || "user";
+  const payload = {
+    email: user.email,
+    username: user.username,
+    role,
+  };
+  const token = jwt.sign(payload, "ABC");
+  return res.status(200).json({ token, role });
 }
 
-export async function register(req,res) {
-        const {username,email,place,password}=req.body;
-            const existingUser = await usern.findOne({ $or: [{ username }, { email }] });    
-            if(existingUser){
-                res.status(400).json({"message":"user already register"})
-            }
-            else{
-                const role = "user";
-                const newuser = new usern({username,email,place,password,role})
-                newuser.save();
-                const payload={
-                    username,
-                    role,
-                    }
-                const token = jwt.sign(payload,"ABC") 
-                res.status(200).json({token, role})
-        }
+export async function register(req, res) {
+  const { username, email, place, password } = req.body;
+
+  if (!username || !email || !place || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  const normalizedEmail = normalizeEmail(email);
+  if (!EMAIL_REGEX.test(normalizedEmail)) {
+    return res.status(400).json({ message: "Please enter a valid email address" });
+  }
+
+  const existingUser =
+    (await usern.findOne({ username })) || (await findUserByEmail(normalizedEmail));
+
+  if (existingUser) {
+    if (existingUser.email === normalizedEmail) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+    return res.status(400).json({ message: "Username already taken" });
+  }
+
+  const role = "user";
+  const newuser = new usern({ username, email: normalizedEmail, place, password, role });
+  await newuser.save();
+
+  const payload = { username, email: normalizedEmail, role };
+  const token = jwt.sign(payload, "ABC");
+  return res.status(200).json({ token, role });
 }
 
 export async function getProducts(req,res) {
