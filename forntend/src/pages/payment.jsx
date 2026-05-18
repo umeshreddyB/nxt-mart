@@ -4,6 +4,7 @@ import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { isAuthenticated } from "../utils/auth";
 import { useCart } from "../contexts/CartContext";
+import { apiUrl } from "../utils/api";
 
 
 
@@ -31,7 +32,7 @@ const Payment = () => {
   const handlePlaceOrder = async (paymentMethod, nextStep) => {
     setIsSubmitting(true);
     try {
-      const response = await fetch("http://localhost:8000/orders", {
+      const response = await fetch(apiUrl("/orders"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

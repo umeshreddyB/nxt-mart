@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from "../contexts/CartContext";
 import { setAuthSession } from "../utils/auth";
+import { apiUrl } from "../utils/api";
 
 
 
@@ -35,7 +36,7 @@ function Aute (){
                         }),}
 
 
-                        const reponse = await fetch("https://nxt-mart-54ka.onrender.com/login", options);
+                        const reponse = await fetch(apiUrl("/login"), options);
                         const data= await reponse.json()
                         
                         if(data.token === undefined){
@@ -98,7 +99,7 @@ function Aute (){
                         }),}
 
 
-                        const reponse = await fetch("https://nxt-mart-54ka.onrender.com/register", options);
+                        const reponse = await fetch(apiUrl("/register"), options);
                         const data= await reponse.json()
                         
                         if(data.token === undefined){

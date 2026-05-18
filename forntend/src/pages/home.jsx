@@ -4,6 +4,7 @@ import Products from "../compound/Products";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import {SkeletonCard} from "../styling/skelton";
+import { apiUrl } from "../utils/api";
 
 function Home() {
     const [products, setProducts] = useState([]);
@@ -21,7 +22,10 @@ function Home() {
         const getdata = async () => {
             setLoading(true);
             try{
-                const reponse = await fetch("https://nxt-mart-54ka.onrender.com/https://nxt-mart-54ka.onrender.com/getProducts");
+                const reponse = await fetch(apiUrl("/getProducts"));
+                if (!reponse.ok) {
+                    throw new Error(`Request failed with status ${reponse.status}`);
+                }
                 const data = await reponse.json();
 
                 const categoryList = Array.isArray(data)

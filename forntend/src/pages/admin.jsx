@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { apiUrl } from "../utils/api";
 
 function Admin() {
   const [categories, setCategories] = useState([]);
@@ -17,7 +18,7 @@ function Admin() {
   });
 
   const loadDashboard = async () => {
-    const response = await fetch("http://localhost:8000/admin/dashboard");
+    const response = await fetch(apiUrl("/admin/dashboard"));
     const data = await response.json();
     setCategories(data.categories || []);
     setOrders(data.orders || []);
@@ -39,7 +40,7 @@ function Admin() {
     event.preventDefault();
     setStatusMessage("");
 
-    const response = await fetch("http://localhost:8000/admin/products/add", {
+    const response = await fetch(apiUrl("/admin/products/add"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -68,7 +69,7 @@ function Admin() {
     event.preventDefault();
     setStatusMessage("");
 
-    const response = await fetch("http://localhost:8000/admin/products/remove", {
+    const response = await fetch(apiUrl("/admin/products/remove"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
